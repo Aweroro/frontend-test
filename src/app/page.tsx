@@ -18,7 +18,6 @@ const Home = () => {
 
       <AnnotationTools 
       onSelectTool={setSelectedTool} 
-      onSelectColor={setSelectedColor} 
       />
 
       <div ref={pdfRef} className='relative'>
