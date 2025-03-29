@@ -29,7 +29,7 @@ const FileViewer = ({file}: FileViwerProps) => {
   };
 
   return (
-    <div className='overflow-auto border rounded-lg w-full h-[80vh]'
+    <div className='overflow-auto flex justify-center border rounded-lg w-[100%] h-[80vh]'
     >
       {file ? (
         <Document
