@@ -1,13 +1,14 @@
+'use client'
 import * as fabric from "fabric";
 import { useEffect, useRef, useState } from "react";
 
 interface AnnotationCanvasProps {
   pdfRef: React.RefObject<HTMLDivElement | null>;
   selectedTool: string | null;
-  selectedColor: string;
+  selectedColors: { highlight: string; underline: string };
 }
 
-const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColor }: AnnotationCanvasProps) => {
+const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColors }: AnnotationCanvasProps) => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [canvasReady, setCanvasReady] = useState(false);
@@ -18,7 +19,7 @@ const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColor }: AnnotationCan
     if (!containerRef.current) return;
 
     const canvas = new fabric.Canvas("annotation-canvas", {
-      selection: false, 
+      selection: false,
     });
 
     canvasRef.current = canvas;
@@ -66,8 +67,8 @@ const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColor }: AnnotationCan
           left: startPosition.current.x,
           top: startPosition.current.y,
           width: pointer.x - startPosition.current.x,
-          height: 20, 
-          fill: selectedColor + "80", 
+          height: 20,
+          fill: selectedColors.highlight + "80",
           selectable: false,
         });
 
@@ -81,9 +82,9 @@ const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColor }: AnnotationCan
       canvas.on("mouse:down", (event) => {
         const pointer = canvas.getPointer(event.e);
         const line = new fabric.Line(
-          [pointer.x, pointer.y, pointer.x + 100, pointer.y], // Fixed 100px underline
+          [pointer.x, pointer.y, pointer.x + 100, pointer.y],
           {
-            stroke: selectedColor,
+            stroke: selectedColors.underline,
             strokeWidth: 2,
             selectable: false,
           }
@@ -117,7 +118,7 @@ const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColor }: AnnotationCan
     }
 
     canvas.renderAll();
-  }, [selectedTool, selectedColor, canvasReady]);
+  }, [selectedTool, selectedColors, canvasReady]);
 
   return (
     <div ref={containerRef} className="absolute top-0 left-0 w-full h-full">
