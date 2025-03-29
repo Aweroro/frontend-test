@@ -1,19 +1,31 @@
 'use client'
 import * as fabric from "fabric";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface AnnotationCanvasProps {
   pdfRef: React.RefObject<HTMLDivElement | null>;
   selectedTool: string | null;
   selectedColors: { highlight: string; underline: string };
+  onClearAnnotations: (clearFn: () => void) => void;
 }
 
-const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColors }: AnnotationCanvasProps) => {
+const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColors, onClearAnnotations }: AnnotationCanvasProps) => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [canvasReady, setCanvasReady] = useState(false);
   const isDrawing = useRef(false);
   const startPosition = useRef<{ x: number; y: number } | null>(null);
+
+  const clearCanvas = useCallback(() => {
+    if (canvasRef.current) {
+      canvasRef.current.clear();
+      canvasRef.current.renderAll();
+    }
+  }, []);
+
+  useEffect(() => {
+    onClearAnnotations(clearCanvas);
+  }, [onClearAnnotations, clearCanvas]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -46,11 +58,12 @@ const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColors }: AnnotationCa
     if (!canvasReady || !canvasRef.current) return;
     const canvas = canvasRef.current;
 
-    canvas.isDrawingMode = false;
-    canvas.selection = false;
     canvas.off("mouse:down");
     canvas.off("mouse:move");
     canvas.off("mouse:up");
+
+    canvas.isDrawingMode = false;
+    canvas.selection = false;
 
     if (selectedTool === "highlight") {
       canvas.on("mouse:down", (event) => {
@@ -93,11 +106,13 @@ const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColors }: AnnotationCa
         canvas.add(line);
         canvas.renderAll();
       });
+
     } else if (selectedTool === "signature") {
       canvas.isDrawingMode = true;
       canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
       canvas.freeDrawingBrush.color = "black";
       canvas.freeDrawingBrush.width = 2;
+
     } else if (selectedTool === "comment") {
       canvas.on("mouse:down", (event) => {
         const pointer = canvas.getPointer(event.e);
@@ -128,4 +143,3 @@ const AnnotationCanvas = ({ pdfRef, selectedTool, selectedColors }: AnnotationCa
 };
 
 export default AnnotationCanvas;
-
