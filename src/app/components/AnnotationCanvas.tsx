@@ -74,7 +74,7 @@ const AnnotationCanvas = ({selectedTool, selectedColor}: AnnotationCanvasProps) 
   }, [selectedTool, selectedColor, canvasReady]);
 
   return (
-    <div ref={containerRef} className="absolute top-0 right-0 w-full h-full">
+    <div ref={containerRef} className="absolute top-0 left-0 w-full h-full">
       <canvas id="annotation-canvas" className="w-full h-full"></canvas>
     </div>
   );
