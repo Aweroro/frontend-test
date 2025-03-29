@@ -1,4 +1,4 @@
-import * as fabric from 'fabric';
+import * as fabric from "fabric";
 import { useEffect, useRef, useState } from "react";
 
 interface AnnotationCanvasProps {
@@ -7,7 +7,7 @@ interface AnnotationCanvasProps {
   selectedColor: string;
 }
 
-const AnnotationCanvas = ({selectedTool, selectedColor}: AnnotationCanvasProps) => {
+const AnnotationCanvas = ({ selectedTool, selectedColor }: AnnotationCanvasProps) => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [canvasReady, setCanvasReady] = useState(false);
@@ -45,24 +45,21 @@ const AnnotationCanvas = ({selectedTool, selectedColor}: AnnotationCanvasProps) 
 
     canvas.isDrawingMode = false;
     canvas.selection = false;
+    canvas.off("mouse:down"); 
 
     if (selectedTool === "highlight") {
       canvas.isDrawingMode = true;
       canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
       canvas.freeDrawingBrush.color = selectedColor;
       canvas.freeDrawingBrush.width = 10;
-      canvas.renderAll();
     } else if (selectedTool === "underline") {
       canvas.on("mouse:down", (event) => {
         const pointer = canvas.getPointer(event.e);
-        const line = new fabric.Line(
-          [pointer.x, pointer.y, pointer.x + 100, pointer.y], // default line length
-          {
-            stroke: selectedColor,
-            strokeWidth: 3,
-            selectable: true,
-          }
-        );
+        const line = new fabric.Line([pointer.x, pointer.y, pointer.x + 100, pointer.y], {
+          stroke: selectedColor,
+          strokeWidth: 3,
+          selectable: true,
+        });
         canvas.add(line);
       });
     } else if (selectedTool === "signature") {
@@ -70,7 +67,27 @@ const AnnotationCanvas = ({selectedTool, selectedColor}: AnnotationCanvasProps) 
       canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
       canvas.freeDrawingBrush.color = "black";
       canvas.freeDrawingBrush.width = 2;
-    }
+    } else if (selectedTool === "comment") {
+        canvas.on("mouse:down", (event) => {
+          const pointer = canvas.getPointer(event.e);
+      
+          const comment = new fabric.Textbox("", {
+            left: pointer.x,
+            top: pointer.y,
+            width: 120,
+            fontSize: 14,
+            backgroundColor: "#ffffff",
+            borderColor: "#000000",
+            editable: true,
+          });
+      
+          canvas.add(comment);
+          canvas.renderAll();
+        });
+      }
+      
+    
+    canvas.renderAll();
   }, [selectedTool, selectedColor, canvasReady]);
 
   return (
@@ -81,3 +98,4 @@ const AnnotationCanvas = ({selectedTool, selectedColor}: AnnotationCanvasProps) 
 };
 
 export default AnnotationCanvas;
+

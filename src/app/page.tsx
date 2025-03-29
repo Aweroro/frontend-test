@@ -12,10 +12,6 @@ const Home = () => {
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>('#FFD700');
 
-  const clearAnnotations = () => {
-    setSelectedTool(null);
-  };
-
   return (
     <div className='p-4'>
       <PDFUploader onFileSelect={setFile}/>
@@ -39,3 +35,4 @@ const Home = () => {
 }
 
 export default Home;
+
